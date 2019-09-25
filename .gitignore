@@ -25,5 +25,5 @@ Thumbs.db
 
 # .env
 .env
-.env.production
-.env.staging
+.env.*
+!.env.example
