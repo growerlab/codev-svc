@@ -10,8 +10,8 @@ depends on golang greater than 1.13
 
 ### installation
 ``` bash
-go get github.com/growerlab/letsgit-svc
-cd $GOPATH/src/github.com/growerlab/letsgit-svc
+go get github.com/growerlab/codev-svc
+cd $GOPATH/src/github.com/growerlab/codev-svc
 go mod download
 ```
 

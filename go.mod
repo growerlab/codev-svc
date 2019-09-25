@@ -1,4 +1,4 @@
-module github.com/growerlab/letsgit-svc
+module github.com/growerlab/codev-svc
 
 go 1.13
 

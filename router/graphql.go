@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/growerlab/letsgit-svc/schema"
+	"github.com/growerlab/codev-svc/schema"
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/handler"
 )

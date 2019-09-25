@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/growerlab/letsgit-svc/model"
+	"github.com/growerlab/codev-svc/model"
 	"github.com/graphql-go/graphql"
 )
 
