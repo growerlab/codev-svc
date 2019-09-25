@@ -49,4 +49,5 @@ func init() {
 
 func SetRouter() {
 	Router.POST("/graphql", GraphqlHandler())
+	Router.Static("/graphql", "./static")
 }

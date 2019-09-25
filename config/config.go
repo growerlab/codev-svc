@@ -37,10 +37,9 @@ func InitConfig() {
     godotenv.Load(".env.local")
   }
 
-  Config.Port = "6000"
+  Config.Port = "9000"
   port := os.Getenv("PORT")
   if port != "" {
-  } else {
     Config.Port = port
   }
 
