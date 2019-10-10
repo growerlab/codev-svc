@@ -9,3 +9,5 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/rs/zerolog v1.15.0
 )
+
+replace github.com/libgit2/git2go => ./vendor/github.com/libgit2/git2go

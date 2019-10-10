@@ -4,21 +4,22 @@ const ReposPath = "repos/"
 const DefaultBranch = "master"
 
 type Repo struct {
-  Path              string
-  Name              string
-  DefaultBranch     string
+  Path              string              `json:"path"`
+  Name              string              `json:"name"`
+  DefaultBranch     string              `json:"default_branch"`
   defaultRawBranch  *Branch
 
-  RepoSize          float64 // bytes
+  // bytes
+  RepoSize          float64             `json:"repo_size"`
 
-  Branches          []string
+  Branches          []string            `json:"branches"`
   RawBranches       []*Branch
 
 
-  Tags              []string
+  Tags              []string            `json:"tags"`
   RawTags           []*Tag
 
-  Refs              []string
+  Refs              []string            `json:"refs"`
   RawRefs           []*Ref
 }
 

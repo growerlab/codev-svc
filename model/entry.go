@@ -9,7 +9,7 @@ const (
 )
 
 type Entry struct {
-  Path    string
-  Name    string
-  EntryType EntryType
+  Path    string          `json:"path"`
+  Name    string          `json:"name"`
+  EntryType EntryType     `json:"entry_type"`
 }

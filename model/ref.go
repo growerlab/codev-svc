@@ -1,6 +1,6 @@
 package model
 
 type Ref struct {
-  name   string
+  name   string     `json:"path"`
   Commit *Commit
 }

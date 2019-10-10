@@ -1,8 +1,8 @@
 package model
 
 type Blob struct {
-  Path    string
-  Name    string
+  Path    string     `json:"path"`
+  Name    string     `json:"name"`
   Raw     []byte
-  Content string
+  Content string     `json:"content"`
 }
