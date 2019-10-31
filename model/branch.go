@@ -2,6 +2,6 @@ package model
 
 type Branch struct {
   Name string     `json:"name"`
-  Ref  *Ref
-  Commit *Commit
+  Ref  *Ref       `json:"ref"`
+  Commit *Commit  `json:"commit"`
 }

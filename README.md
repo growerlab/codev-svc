@@ -12,6 +12,8 @@ depends on golang greater than 1.13
 ``` bash
 go get github.com/growerlab/codev-svc
 cd $GOPATH/src/github.com/growerlab/codev-svc
+git submodule init
+cd vendor/github.com/libgit2/git2go && git submodule update && make install-static
 go mod download
 ```
 
