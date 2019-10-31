@@ -1,6 +1,6 @@
 package model
 
 type Tag struct {
-  name   string     `json:"path"`
-  Commit *Commit 
+  Name   string     `json:"name"`
+  Commit *Commit    `json:"commit"`
 }

@@ -1,32 +1,74 @@
 package model
 
+import (
+	"path"
+  "gopkg.in/libgit2/git2go.v27"
+)
+
 const ReposPath = "repos/"
 const DefaultBranch = "master"
 
 type Repo struct {
   Path              string              `json:"path"`
   Name              string              `json:"name"`
-  DefaultBranch     string              `json:"default_branch"`
-  defaultRawBranch  *Branch
+  defaultBranch  *Branch                `json:"default_branch"`
 
   // bytes
   RepoSize          float64             `json:"repo_size"`
 
-  Branches          []string            `json:"branches"`
-  RawBranches       []*Branch
+  Branches       []*Branch              `json:"branches"`
 
+  Tags           []*Tag                  `json:"tags"`
 
-  Tags              []string            `json:"tags"`
-  RawTags           []*Tag
+  Refs           []*Ref                  `json:"refs"`
 
-  Refs              []string            `json:"refs"`
-  RawRefs           []*Ref
+  // internal methods
+  RawRepo        *git.Repository
 }
 
-func (*Repo)InitRepo(path string, name string) (repo *Repo, err error) {
-  repo = &Repo{
+func OpenRepo(path string, name string) (*Repo, error) {
+  repo := &Repo{
     Path: path,
     Name: name,
   }
-  return
+  repoPath := path.Join(ReposPath, path, name )
+  repo.RawRepo, err := git.OpenRepository(repoPath)
+
+  if(err) {
+    return nil, err
+  }
+
+  return repo, nil
+}
+
+func InitRepo(path string, name string) (repo *Repo, err error) {
+  repo := &Repo{
+    Path: path,
+    Name: name,
+  }
+  repoPath := path.Join(ReposPath, path, name )
+  repo.RawRepo, err := git.InitRepository(repoPath, true)
+  if(err) {
+    return nil, err
+  }
+  return repo, nil
+}
+
+func (repo *Repo)Head()(*Ref, err) {
+  rawRef, err := repo.Head()
+  if(err) {
+    return nil, err
+  }
+
+
+  ref := &Ref{
+    name: rawRef.Name()
+  }
+
+  return ref, nil
+}
+
+func (repo *Repo)DefaultBranch(*Branch, err) {
+    ref, err := repo.Head()
+    if(ref)
 }
