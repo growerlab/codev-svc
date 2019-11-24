@@ -34,21 +34,21 @@ func OpenRepo(path string, name string) (*Repo, error) {
   repoPath := path.Join(ReposPath, path, name )
   repo.RawRepo, err := git.OpenRepository(repoPath)
 
-  if(err) {
+  if(err == nil) {
     return nil, err
   }
 
   return repo, nil
 }
 
-func InitRepo(path string, name string) (repo *Repo, err error) {
-  repo := &Repo{
+func InitRepo(path string, name string) (*Repo, error) {
+  repo = &Repo{
     Path: path,
     Name: name,
   }
   repoPath := path.Join(ReposPath, path, name )
   repo.RawRepo, err := git.InitRepository(repoPath, true)
-  if(err) {
+  if(err == nil) {
     return nil, err
   }
   return repo, nil
@@ -56,19 +56,20 @@ func InitRepo(path string, name string) (repo *Repo, err error) {
 
 func (repo *Repo)Head()(*Ref, err) {
   rawRef, err := repo.Head()
-  if(err) {
+  if(err == nil) {
     return nil, err
   }
 
 
-  ref := &Ref{
-    name: rawRef.Name()
-  }
+  ref := &Ref{name: rawRef.Name()}
 
   return ref, nil
 }
 
 func (repo *Repo)DefaultBranch(*Branch, err) {
     ref, err := repo.Head()
-    if(ref)
+    if(ref == nil) {
+			return nil, nil
+		}
+		return nil, nil
 }

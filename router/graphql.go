@@ -6,7 +6,18 @@ import (
 	"github.com/graphql-go/handler"
 )
 
-func GraphqlHandler() gin.HandlerFunc{
+func GraphQLHandler() gin.HandlerFunc{
+	h := handler.New(&handler.Config{
+		Schema: &schema.Schema,
+		Pretty: true,
+	})
+
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
+}
+
+func GraphiQLHandler() gin.HandlerFunc {
 	h := handler.New(&handler.Config{
 		Schema: &schema.Schema,
 		Pretty: true,
