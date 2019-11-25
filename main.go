@@ -10,7 +10,7 @@ func main () {
 
 	router.SetRouter()
 
-	config.Logger.Info().Msgf("boot server on port: %s\n", config.Config.Port)
+	config.Logger.Info().Msgf("booting server on port: %s\n", config.Config.Port)
 	r.Run(":" + config.Config.Port)
 	r.Run(":" + config.Config.Port)
 }

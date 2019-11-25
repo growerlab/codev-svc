@@ -1,6 +1,7 @@
 package model
 
 import (
+  "errors"
   "gopkg.in/libgit2/git2go.v27"
 )
 
@@ -21,22 +22,45 @@ type Ref struct {
   RefType RefType `json:"ref_type"`
   Commit *Commit    `json:"commit"`
 
-  // internal variable
-  rawRef *git.Reference
+  RawRef *git.Reference
+  Repo *Repo
 }
 
-// func (ref*Ref) GetRefType() RefType {
-//   if(ref.rawRef.IsBranch()) {
-//     ref.RefType = RefBranch
-//   } else if (ref.rawRef.isTag()) {
-//     ref.RefType = RefTag
-//   } else if (ref.rawRef.isRemote()) {
-//     ref.RefType = RefRemote
-//   } else if (ref.rawRef.isNote()) {
-//       ref.RefType = RefNote
-//   } else {
-//     ref.RefType = RefUnknown
-//   }
-//
-//   return ref.RefType
-// }
+func (ref*Ref) RetriveRefType() RefType {
+  if(ref.RawRef.IsBranch()) {
+    ref.RefType = RefBranch
+  } else if (ref.RawRef.IsTag()) {
+    ref.RefType = RefTag
+  } else if (ref.RawRef.IsRemote()) {
+    ref.RefType = RefRemote
+  } else if (ref.RawRef.IsNote()) {
+      ref.RefType = RefNote
+  } else {
+    ref.RefType = RefUnknown
+  }
+
+  return ref.RefType
+}
+
+func (ref*Ref) TargetCommit() (*Commit, error){
+  refType := ref.RawRef.Type()
+  if(git.ReferenceSymbolic == refType) {
+    refName := ref.RawRef.SymbolicTarget()
+    refs := ref.Repo.RawRepo.References
+    refResolved, err := refs.Lookup(refName)
+    if(err != nil) {
+      return nil, err
+    }
+    refWrapped := &Ref{Name: refName, RawRef: refResolved}
+    return refWrapped.TargetCommit()
+  } else if(git.ReferenceOid == refType) {
+    oid := ref.RawRef.Target()
+    rawCommit, err := ref.Repo.RawRepo.LookupCommit(oid)
+    if(err != nil) {
+      return nil, err
+    }
+    return InitCommit(rawCommit), nil
+  } else {
+    return nil, errors.New("not found")
+  }
+}
