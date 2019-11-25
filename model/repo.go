@@ -26,50 +26,53 @@ type Repo struct {
   RawRepo        *git.Repository
 }
 
-func OpenRepo(path string, name string) (*Repo, error) {
+func OpenRepo(repoPath string, name string) (*Repo, error) {
   repo := &Repo{
-    Path: path,
+    Path: repoPath,
     Name: name,
   }
-  repoPath := path.Join(ReposPath, path, name )
-  repo.RawRepo, err := git.OpenRepository(repoPath)
+  repoFullPath := path.Join(ReposPath, repoPath, name)
+  rawRepo, err := git.OpenRepository(repoFullPath)
 
-  if(err == nil) {
+  if(err != nil) {
     return nil, err
   }
+	repo.RawRepo = rawRepo
 
   return repo, nil
 }
 
-func InitRepo(path string, name string) (*Repo, error) {
-  repo = &Repo{
-    Path: path,
+func InitRepo(repoPath string, name string) (*Repo, error) {
+  repo := &Repo{
+    Path: repoPath,
     Name: name,
   }
-  repoPath := path.Join(ReposPath, path, name )
-  repo.RawRepo, err := git.InitRepository(repoPath, true)
-  if(err == nil) {
+  repoFullPath := path.Join(ReposPath, repoPath, name )
+  rawRepo, err := git.InitRepository(repoFullPath, true)
+  if(err != nil) {
     return nil, err
   }
+	repo.RawRepo = rawRepo
   return repo, nil
 }
 
-func (repo *Repo)Head()(*Ref, err) {
-  rawRef, err := repo.Head()
-  if(err == nil) {
+func (repo *Repo)Head()(*Ref, error) {
+  rawRef, err := repo.RawRepo.Head()
+  if(err != nil) {
     return nil, err
   }
 
-
-  ref := &Ref{name: rawRef.Name()}
+  ref := &Ref{Name: rawRef.Name()}
 
   return ref, nil
 }
 
-func (repo *Repo)DefaultBranch(*Branch, err) {
-    ref, err := repo.Head()
-    if(ref == nil) {
-			return nil, nil
-		}
-		return nil, nil
+func (repo *Repo)DefaultBranch() (*Branch, error) {
+	rawRef, err := repo.RawRepo.Head()
+	if(err != nil) {
+		return nil, err
+	}
+
+	branch := &Branch{Name: rawRef.Name()}
+	return branch, nil
 }

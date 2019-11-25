@@ -40,6 +40,10 @@ var queryRepo = graphql.Field{
 		path, _ := p.Args["path"].(string)
 		name, _ := p.Args["name"].(string)
 
-		return (&model.Repo{}).InitRepo(path, name)
+		repo, err := model.InitRepo(path, name)
+		if(err != nil) {
+			return nil, err
+		}
+		return repo, nil
 	},
 }

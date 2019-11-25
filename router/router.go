@@ -48,7 +48,8 @@ func init() {
 }
 
 func SetRouter() {
-	Router.POST("/graphql", GraphqlHandler())
-	Router.GET("/graphql", GraphqlHandler())
-	Router.GET("/graphiql", GraphqlHandler())
+	Router.POST("/graphql", GraphQLHandler())
+	Router.GET("/graphql", GraphQLHandler())
+	Router.POST("/graphiql", GraphiQLHandler())
+	Router.GET("/graphiql", GraphiQLHandler())
 }
