@@ -12,8 +12,8 @@ type Branch struct {
   RawBranch *git.Branch
 }
 
-func InitBranch(rawBranch *git.Branch) *Branch{
-  branch := &Branch{RawBranch: rawBranch}
+func InitBranch(name string, rawBranch *git.Branch) *Branch {
+  branch := &Branch{Name: name, RawBranch: rawBranch}
   // set name, Commit...
   return branch
 }

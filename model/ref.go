@@ -26,6 +26,10 @@ type Ref struct {
   Repo *Repo
 }
 
+func InitRef(name string, rawRef *git.Reference) *Ref {
+  return &Ref{Name: name, RawRef: rawRef}
+}
+
 func (ref*Ref) RetriveRefType() RefType {
   if(ref.RawRef.IsBranch()) {
     ref.RefType = RefBranch

@@ -11,8 +11,6 @@ type Tag struct {
   RawTag *git.Tag
 }
 
-func InitTag(rawTag *git.Tag) *Tag{
-  tag := &Tag{RawTag: rawTag}
-  // set Name, Commit...
-  return  tag
+func InitTag(name string, rawTag *git.Tag) *Tag{
+  return &Tag{Name: name, RawTag: rawTag}
 }
