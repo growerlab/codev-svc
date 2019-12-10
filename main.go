@@ -5,10 +5,10 @@ import (
 	"github.com/growerlab/codev-svc/router"
 )
 
-func main () {
+func main() {
 	r := router.Router
 
-	router.SetRouter()
+	router.Route()
 
 	config.Logger.Info().Msgf("booting server on port: %s\n", config.Config.Port)
 	r.Run(":" + config.Config.Port)

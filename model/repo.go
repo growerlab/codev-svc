@@ -1,75 +1,79 @@
 package model
 
 import (
+	"errors"
+	"gopkg.in/libgit2/git2go.v27"
+	"os"
 	"path"
-  "gopkg.in/libgit2/git2go.v27"
+	"path/filepath"
 )
 
 const ReposPath = "repos/"
 const DefaultBranch = "master"
 
 type Repo struct {
-  Path              string              `json:"path"`
-  Name              string              `json:"name"`
-  defaultBranch  *Branch                `json:"default_branch"`
+	Path          string  `json:"path"`
+	Name          string  `json:"name"`
+	defaultBranch *Branch `json:"default_branch"`
 
-  // bytes
-  RepoSize          float64             `json:"repo_size"`
+	// bytes
+	RepoSize float64 `json:"repo_size"`
 
-  Branches       []*Branch              `json:"branches"`
+	Branches []*Branch `json:"branches"`
 
-  Tags           []*Tag                  `json:"tags"`
+	Tags []*Tag `json:"tags"`
 
-  Refs           []*Ref                  `json:"refs"`
+	Refs []*Ref `json:"refs"`
 
-	Submodules		 []*Submodule						 `json:"submodules"`
+	Submodules []*Submodule `json:"submodules"`
 
-  // internal methods
-  RawRepo        *git.Repository
+	// internal methods
+	RawRepo  *git.Repository
+	RepoPath string
 }
 
 func OpenRepo(repoPath string, name string) (*Repo, error) {
-  repo := &Repo{
-    Path: repoPath,
-    Name: name,
-  }
-  repoFullPath := path.Join(ReposPath, repoPath, name)
-  rawRepo, err := git.OpenRepository(repoFullPath)
+	repo := &Repo{
+		Path: repoPath,
+		Name: name,
+	}
+	repo.RepoPath = path.Join(ReposPath, repoPath, name)
+	rawRepo, err := git.OpenRepository(repo.RepoPath)
 
-  if(err != nil) {
-    return nil, err
-  }
+	if err != nil {
+		return nil, err
+	}
 	repo.RawRepo = rawRepo
 	repo.postRepoCreated()
 
-  return repo, nil
+	return repo, nil
 }
 
 func InitRepo(repoPath string, name string) (*Repo, error) {
-  repo := &Repo{
-    Path: repoPath,
-    Name: name,
-  }
-  repoFullPath := path.Join(ReposPath, repoPath, name )
-  rawRepo, err := git.InitRepository(repoFullPath, true)
-  if(err != nil) {
-    return nil, err
-  }
+	repo := &Repo{
+		Path: repoPath,
+		Name: name,
+	}
+	repo.RepoPath = path.Join(ReposPath, repoPath, name)
+	rawRepo, err := git.InitRepository(repo.RepoPath, true)
+	if err != nil {
+		return nil, err
+	}
 	repo.RawRepo = rawRepo
 	repo.postRepoCreated()
-  return repo, nil
+	return repo, nil
 }
 
-func (repo *Repo)postRepoCreated() {
+func (repo *Repo) postRepoCreated() {
 	// fill all fields after repo oject created
 
 	// References
 	repo.Refs = make([]*Ref, 1)
 	refsIterator, err := repo.RawRepo.NewReferenceIterator()
-	if(err == nil) {
+	if err == nil {
 		for {
 			rawRef, _ := refsIterator.Next()
-			if(rawRef == nil) {
+			if rawRef == nil {
 				break
 			}
 
@@ -77,14 +81,13 @@ func (repo *Repo)postRepoCreated() {
 		}
 	}
 
-
 	// Branches
 	repo.Branches = make([]*Branch, 1)
 	branchesIterator, err := repo.RawRepo.NewBranchIterator(git.BranchLocal)
-	if(err == nil) {
+	if err == nil {
 		for {
 			rawBranch, _, _ := branchesIterator.Next()
-			if(rawBranch == nil) {
+			if rawBranch == nil {
 				break
 			}
 
@@ -93,12 +96,11 @@ func (repo *Repo)postRepoCreated() {
 		}
 	}
 
-
 	// Tags
 	repo.Tags = make([]*Tag, 1)
 	repo.RawRepo.Tags.Foreach(func(name string, oid *git.Oid) error {
 		rawTag, _ := repo.RawRepo.LookupTag(oid)
-		if(rawTag != nil) {
+		if rawTag != nil {
 			repo.Tags = append(repo.Tags, InitTag(name, rawTag))
 		}
 		return nil
@@ -112,23 +114,42 @@ func (repo *Repo)postRepoCreated() {
 	})
 }
 
-func (repo *Repo)Head()(*Ref, error) {
-  rawRef, err := repo.RawRepo.Head()
-  if(err != nil) {
-    return nil, err
-  }
-
-  ref := &Ref{Name: rawRef.Name()}
-
-  return ref, nil
-}
-
-func (repo *Repo)DefaultBranch() (*Branch, error) {
+func (repo *Repo) Head() (*Ref, error) {
 	rawRef, err := repo.RawRepo.Head()
-	if(err != nil) {
+	if err != nil {
 		return nil, err
 	}
 
-	branch := &Branch{Name: rawRef.Name()}
-	return branch, nil
+	ref := &Ref{Name: rawRef.Name(), RawRef: rawRef}
+
+	return ref, nil
+}
+
+func (repo *Repo) DefaultBranch() (*Branch, error) {
+	rawRef, err := repo.RawRepo.Head()
+	if err != nil {
+		return nil, err
+	}
+
+	if rawRef.IsBranch() || rawRef.IsTag() || rawRef.IsRemote() {
+		branch := &Branch{Name: rawRef.Name(), RawBranch: rawRef.Branch()}
+		return branch, nil
+	}
+
+	// raise exception right now
+	return nil, errors.New("head detached")
+}
+
+func (repo *Repo) Size() int64 {
+	var size int64
+	filepath.Walk(repo.RepoPath, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return err
+	})
+	return size
 }

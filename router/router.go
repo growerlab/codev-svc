@@ -1,12 +1,14 @@
 package router
 
 import (
-	"os"
-	"io"
-	"time"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io"
+	"os"
+	"time"
+
 	"github.com/growerlab/codev-svc/config"
+	"github.com/growerlab/codev-svc/model"
 )
 
 var Router *gin.Engine
@@ -43,11 +45,23 @@ func init() {
 	Router.Use(gin.Recovery())
 
 	Router.GET("/ping", func(c *gin.Context) {
-    c.String(200, "ok")
-  })
+		c.String(200, "ok")
+	})
 }
 
-func SetRouter() {
+func ctxRepoMiddleware(c *gin.Context) {
+	if c.Request.URL.Path == "/graphql" {
+		// repo, err := model.OpenRepo()
+		// if(err == nil) {
+		// 	ctx = context.WithValue(ctx, "repo", repo)
+		// } else {
+		// 	// raise exception
+		// }
+	}
+	c.Next()
+}
+
+func Route() {
 	Router.POST("/graphql", GraphQLHandler())
 	Router.GET("/graphql", GraphQLHandler())
 	Router.POST("/graphiql", GraphiQLHandler())

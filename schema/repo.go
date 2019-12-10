@@ -1,12 +1,12 @@
 package schema
 
 import (
-	"github.com/growerlab/codev-svc/model"
 	"github.com/graphql-go/graphql"
+	"github.com/growerlab/codev-svc/model"
 )
 
 var RepoType = graphql.NewObject(graphql.ObjectConfig{
-	Name: "Repo",
+	Name:        "Repo",
 	Description: "Repo Model",
 	Fields: graphql.Fields{
 		"path": &graphql.Field{
@@ -15,19 +15,22 @@ var RepoType = graphql.NewObject(graphql.ObjectConfig{
 		"name": &graphql.Field{
 			Type: graphql.String,
 		},
-		"pepo_size": &graphql.Field{
+		"repo_size": &graphql.Field{
 			Type: graphql.Float,
 		},
 		"default_branch": &graphql.Field{
+			Type: graphql.String,
+		},
+		"branches": &graphql.Field{
 			Type: graphql.String,
 		},
 	},
 })
 
 var queryRepo = graphql.Field{
-	Name: "repo",
+	Name:        "repo",
 	Description: "Query Repo",
-	Type: graphql.NewNonNull(RepoType),
+	Type:        graphql.NewNonNull(RepoType),
 	Args: graphql.FieldConfigArgument{
 		"path": &graphql.ArgumentConfig{
 			Type: graphql.String,
@@ -41,7 +44,7 @@ var queryRepo = graphql.Field{
 		name, _ := p.Args["name"].(string)
 
 		repo, err := model.InitRepo(path, name)
-		if(err != nil) {
+		if err != nil {
 			return nil, err
 		}
 		return repo, nil
