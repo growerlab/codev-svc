@@ -1,27 +1,27 @@
 package model
 
 import (
-  "gopkg.in/libgit2/git2go.v27"
+	"gopkg.in/libgit2/git2go.v27"
 )
 
 type EntryType uint8
 
 const (
-  EntryTree EntryType = iota
-  EntryBlob
-  EntryCommit
+	EntryTree EntryType = iota
+	EntryBlob
+	EntryCommit
 )
 
 type Entry struct {
-  Path    string          `json:"path"`
-  Name    string          `json:"name"`
-  EntryType EntryType     `json:"entry_type"`
+	Path      string    `json:"path"`
+	Name      string    `json:"name"`
+	EntryType EntryType `json:"entry_type"`
 
-  RawEntry *git.TreeEntry
+	RawEntry *git.TreeEntry
 }
 
-func InitEntry(rawEntry *git.TreeEntry) *Entry{
-  entry := &Entry{RawEntry: rawEntry}
-  // set Sha, Message...
-  return  entry
+func InitEntry(rawEntry *git.TreeEntry) *Entry {
+	entry := &Entry{RawEntry: rawEntry}
+	// set Sha, Message...
+	return entry
 }

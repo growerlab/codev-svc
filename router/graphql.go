@@ -1,12 +1,12 @@
 package router
 
 import (
-	"github.com/growerlab/codev-svc/schema"
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/handler"
+	"github.com/growerlab/codev-svc/schema"
 )
 
-func GraphQLHandler() gin.HandlerFunc{
+func GraphQLHandler() gin.HandlerFunc {
 	h := handler.New(&handler.Config{
 		Schema: &schema.Schema,
 		Pretty: true,
@@ -19,8 +19,8 @@ func GraphQLHandler() gin.HandlerFunc{
 
 func GraphiQLHandler() gin.HandlerFunc {
 	h := handler.New(&handler.Config{
-		Schema: &schema.Schema,
-		Pretty: true,
+		Schema:   &schema.Schema,
+		Pretty:   true,
 		GraphiQL: true,
 	})
 

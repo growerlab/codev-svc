@@ -2,13 +2,14 @@ package router
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/growerlab/codev-svc/config"
-	"github.com/growerlab/codev-svc/model"
+	// "github.com/growerlab/codev-svc/model"
 )
 
 var Router *gin.Engine

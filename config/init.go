@@ -1,6 +1,6 @@
 package config
 
 func init() {
-  InitConfig()
-  InitLogger()
+	InitConfig()
+	InitLogger()
 }

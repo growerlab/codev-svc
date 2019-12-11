@@ -11,6 +11,7 @@ func main() {
 	router.Route()
 
 	config.Logger.Info().Msgf("booting server on port: %s\n", config.Config.Port)
-	r.Run(":" + config.Config.Port)
-	r.Run(":" + config.Config.Port)
+	if err := r.Run(":" + config.Config.Port); err != nil {
+		panic(err)
+	}
 }

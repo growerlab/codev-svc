@@ -1,14 +1,14 @@
 package model
 
 import (
-  "gopkg.in/libgit2/git2go.v27"
+	"gopkg.in/libgit2/git2go.v27"
 )
 
 type Submodule struct {
-  RawSubmodule *git.Submodule
+	RawSubmodule *git.Submodule
 }
 
-func InitSubmodule(rawSubmodule *git.Submodule) *Submodule{
-  submodule := &Submodule{RawSubmodule: rawSubmodule}
-  return  submodule
+func InitSubmodule(rawSubmodule *git.Submodule) *Submodule {
+	submodule := &Submodule{RawSubmodule: rawSubmodule}
+	return submodule
 }
