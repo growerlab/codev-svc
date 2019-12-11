@@ -43,6 +43,26 @@ var queryRepo = graphql.Field{
 		path, _ := p.Args["path"].(string)
 		name, _ := p.Args["name"].(string)
 
+		repo, err := model.OpenRepo(path, name)
+		if err != nil {
+			return nil, err
+		}
+		return repo, nil
+	},
+}
+
+var createRepo = graphql.Field{
+	Name:        "repo",
+	Description: "Create Repo",
+	Type:        graphql.NewNonNull(RepoType),
+	Args: graphql.FieldConfigArgument{
+		"path": &graphql.ArgumentConfig{
+			Type: graphql.NewNonNull(graphql.String),
+		},
+	},
+	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
+		path, _ := p.Args["path"].(string)
+		name, _ := p.Args["name"].(string)
 		repo, err := model.InitRepo(path, name)
 		if err != nil {
 			return nil, err

@@ -2,10 +2,11 @@ package model
 
 import (
 	"errors"
-	"gopkg.in/libgit2/git2go.v27"
 	"os"
 	"path"
 	"path/filepath"
+
+	git "gopkg.in/libgit2/git2go.v27"
 )
 
 const ReposPath = "repos/"
@@ -14,7 +15,7 @@ const DefaultBranch = "master"
 type Repo struct {
 	Path          string  `json:"path"`
 	Name          string  `json:"name"`
-	defaultBranch *Branch `json:"default_branch"`
+	DefaultBranch *Branch `json:"default_branch"`
 
 	// bytes
 	RepoSize float64 `json:"repo_size"`
@@ -125,7 +126,7 @@ func (repo *Repo) Head() (*Ref, error) {
 	return ref, nil
 }
 
-func (repo *Repo) DefaultBranch() (*Branch, error) {
+func (repo *Repo) GetDefaultBranch() (*Branch, error) {
 	rawRef, err := repo.RawRepo.Head()
 	if err != nil {
 		return nil, err
@@ -133,6 +134,7 @@ func (repo *Repo) DefaultBranch() (*Branch, error) {
 
 	if rawRef.IsBranch() || rawRef.IsTag() || rawRef.IsRemote() {
 		branch := &Branch{Name: rawRef.Name(), RawBranch: rawRef.Branch()}
+		repo.DefaultBranch = branch
 		return branch, nil
 	}
 
@@ -142,7 +144,7 @@ func (repo *Repo) DefaultBranch() (*Branch, error) {
 
 func (repo *Repo) Size() int64 {
 	var size int64
-	filepath.Walk(repo.RepoPath, func(_ string, info os.FileInfo, err error) error {
+	err := filepath.Walk(repo.RepoPath, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -151,5 +153,8 @@ func (repo *Repo) Size() int64 {
 		}
 		return err
 	})
+	if err != nil {
+		return 0
+	}
 	return size
 }
