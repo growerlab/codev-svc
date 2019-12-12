@@ -8,6 +8,8 @@ pids/*
 !pids/.gitkeep
 *.pid
 *.seed
+vendor
+main
 
 # IDE
 .idea
@@ -27,5 +29,3 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-
-main

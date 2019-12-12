@@ -7,9 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/growerlab/codev-svc/config"
-	// "github.com/growerlab/codev-svc/model"
+	"github.com/growerlab/codev-svc/router/middleware"
 )
 
 var Router *gin.Engine
@@ -56,21 +55,12 @@ func init() {
 	})
 }
 
-func ctxRepoMiddleware(c *gin.Context) {
-	if c.Request.URL.Path == "/graphql" {
-		// repo, err := model.OpenRepo()
-		// if(err == nil) {
-		// 	ctx = context.WithValue(ctx, "repo", repo)
-		// } else {
-		// 	// raise exception
-		// }
-	}
-	c.Next()
-}
-
 func Route() {
-	Router.POST("/graphql", GraphQLHandler())
-	Router.GET("/graphql", GraphQLHandler())
-	Router.POST("/graphiql", GraphiQLHandler())
-	Router.GET("/graphiql", GraphiQLHandler())
+	graphqlGroup := Router.Group("/", middleware.CtxRepoMiddleware)
+	{
+		graphqlGroup.POST("/graphql", GraphQLHandler())
+		graphqlGroup.GET("/graphql", GraphQLHandler())
+		graphqlGroup.POST("/graphiql", GraphiQLHandler())
+		graphqlGroup.GET("/graphiql", GraphiQLHandler())
+	}
 }

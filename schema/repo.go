@@ -59,6 +59,9 @@ var createRepo = graphql.Field{
 		"path": &graphql.ArgumentConfig{
 			Type: graphql.NewNonNull(graphql.String),
 		},
+		"name": &graphql.ArgumentConfig{
+			Type: graphql.NewNonNull(graphql.String),
+		},
 	},
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
 		path, _ := p.Args["path"].(string)
