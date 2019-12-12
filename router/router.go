@@ -22,12 +22,18 @@ func init() {
 		config.Logger.Fatal().Msgf("Failed to create request log file: %v", err)
 	}
 	gin.DefaultWriter = io.MultiWriter(f)
+	if config.Config.Env == config.EnvDev {
+		gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	}
 
 	eF, err := os.OpenFile(config.Config.ErrorLogFile, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		config.Logger.Fatal().Msgf("Failed to create request error log file: %v", err)
 	}
 	gin.DefaultErrorWriter = io.MultiWriter(eF)
+	if config.Config.Env == config.EnvDev {
+		gin.DefaultErrorWriter = io.MultiWriter(eF, os.Stderr)
+	}
 
 	Router = gin.New()
 	Router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {

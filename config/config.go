@@ -2,8 +2,15 @@ package config
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"os"
+
+	"github.com/joho/godotenv"
+)
+
+const (
+	EnvProduction = "production"
+	EnvStaging    = "staging"
+	EnvDev        = "dev"
 )
 
 type AppConfig struct {
@@ -19,7 +26,7 @@ var Config AppConfig
 func InitConfig() {
 	env := os.Getenv("APP_ENV")
 	if "" == env {
-		env = "dev"
+		env = EnvDev
 	}
 	Config.Env = env
 
