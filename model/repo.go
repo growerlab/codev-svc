@@ -1,16 +1,22 @@
 package model
 
 import (
-	"errors"
 	"os"
 	"path"
 	"path/filepath"
 
+	"github.com/pkg/errors"
+
 	git "gopkg.in/libgit2/git2go.v27"
 )
 
-const ReposPath = "repos/"
+var ReposDir = "repos/"
+
 const DefaultBranch = "master"
+
+func InitRepoDir(repoDir string) {
+	ReposDir = repoDir
+}
 
 type Repo struct {
 	Path          string  `json:"path"`
@@ -38,7 +44,7 @@ func OpenRepo(repoPath string, name string) (*Repo, error) {
 		Path: repoPath,
 		Name: name,
 	}
-	repo.RepoPath = path.Join(ReposPath, repoPath, name)
+	repo.RepoPath = path.Join(ReposDir, repoPath, name)
 	rawRepo, err := git.OpenRepository(repo.RepoPath)
 
 	if err != nil {
@@ -55,10 +61,10 @@ func InitRepo(repoPath string, name string) (*Repo, error) {
 		Path: repoPath,
 		Name: name,
 	}
-	repo.RepoPath = path.Join(ReposPath, repoPath, name)
+	repo.RepoPath = path.Join(ReposDir, repoPath, name)
 	rawRepo, err := git.InitRepository(repo.RepoPath, true)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	repo.RawRepo = rawRepo
 	repo.postRepoCreated()
@@ -69,7 +75,7 @@ func (repo *Repo) postRepoCreated() {
 	// fill all fields after repo oject created
 
 	// References
-	repo.Refs = make([]*Ref, 1)
+	repo.Refs = make([]*Ref, 0)
 	refsIterator, err := repo.RawRepo.NewReferenceIterator()
 	if err == nil {
 		for {
@@ -83,22 +89,18 @@ func (repo *Repo) postRepoCreated() {
 	}
 
 	// Branches
-	repo.Branches = make([]*Branch, 1)
+	repo.Branches = make([]*Branch, 0)
 	branchesIterator, err := repo.RawRepo.NewBranchIterator(git.BranchLocal)
 	if err == nil {
-		for {
-			rawBranch, _, _ := branchesIterator.Next()
-			if rawBranch == nil {
-				break
-			}
-
-			name, _ := rawBranch.Name()
-			repo.Branches = append(repo.Branches, InitBranch(name, rawBranch))
-		}
+		_ = branchesIterator.ForEach(func(branch *git.Branch, branchType git.BranchType) error {
+			name, _ := branch.Name()
+			repo.Branches = append(repo.Branches, InitBranch(name, branch))
+			return nil
+		})
 	}
 
 	// Tags
-	repo.Tags = make([]*Tag, 1)
+	repo.Tags = make([]*Tag, 0)
 	repo.RawRepo.Tags.Foreach(func(name string, oid *git.Oid) error {
 		rawTag, _ := repo.RawRepo.LookupTag(oid)
 		if rawTag != nil {
@@ -108,7 +110,7 @@ func (repo *Repo) postRepoCreated() {
 	})
 
 	// Submodules
-	repo.Submodules = make([]*Submodule, 1)
+	repo.Submodules = make([]*Submodule, 0)
 	repo.RawRepo.Submodules.Foreach(func(rawSubmodule *git.Submodule, name string) int {
 		repo.Submodules = append(repo.Submodules, InitSubmodule(rawSubmodule))
 		return 1

@@ -19,6 +19,7 @@ type AppConfig struct {
 	GinMode      string
 	LogFile      string
 	ErrorLogFile string
+	RepoDir      string
 }
 
 var Config AppConfig
@@ -65,6 +66,8 @@ func InitConfig() {
 	}
 
 	Config.GinMode = os.Getenv("GIN_MODE")
+
+	Config.RepoDir = os.Getenv("REPO_DIR")
 
 	fmt.Printf("config: %+v\n", Config)
 }

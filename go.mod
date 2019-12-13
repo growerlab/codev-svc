@@ -21,4 +21,5 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/rs/zerolog v1.15.0
 	gopkg.in/libgit2/git2go.v27 v27.0.0-20190813173601-94786f9c8fbc
+	gopkg.in/src-d/go-git.v4 v4.13.1
 )
