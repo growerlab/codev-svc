@@ -25,7 +25,7 @@ func init() {
 		gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 	}
 
-	eF, err := os.OpenFile(config.Config.ErrorLogFile, os.O_RDWR|os.O_CREATE, 0644)
+	eF, err := os.OpenFile(config.Config.ErrorLogFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		config.Logger.Fatal().Msgf("Failed to create request error log file: %v", err)
 	}
