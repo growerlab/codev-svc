@@ -40,9 +40,6 @@ func CtxRepoMiddleware(c *gin.Context) {
 		repo, err := model.OpenRepo(reqRepo.Path, reqRepo.Name)
 		if err == nil {
 			c.Request.WithContext(context.WithValue(c, "repo", repo))
-		} else {
-			_ = c.AbortWithError(http.StatusNotFound, errors.Errorf("repo %s not found", reqRepo.fullPath()))
-			return
 		}
 	}
 	c.Next()
