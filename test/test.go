@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"os"
 
 	"gopkg.in/src-d/go-billy.v4/osfs"
 	git "gopkg.in/src-d/go-git.v4"
@@ -37,7 +36,7 @@ import (
 
 func main() {
 	git2go()
-	// gogit()
+	gogit()
 }
 
 const repoPath = "/Users/moli/go-project/src/github.com/growerlab/codev-svc/repos/moli"
@@ -48,27 +47,37 @@ func git2go() {
 		panic(err)
 	}
 
+	f, _ := os.Open(os.DevNull)
+	defer f.Close()
+
 	iter, err := repo.NewBranchIterator(git2.BranchLocal)
 	if err != nil {
 		panic(err)
 	}
 
+	var master *git2.Branch
 	err = iter.ForEach(func(branch *git2.Branch, branchType git2.BranchType) error {
-		fmt.Println(branch.Name())
+		master = branch
+		name, _ := branch.Name()
+		fmt.Fprintln(f, name)
 		return nil
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	wk, err := repo.Walk()
+	commit, err := repo.LookupCommit(master.Target())
 	if err != nil {
 		panic(err)
 	}
-	// wk.Iterate(func(commit *git2.Commit) bool {
-	// 	fmt.Println(commit.Author().Email)
-	// 	return true
-	// })
+	// fmt.Fprintln(f, commit.Id().String(), commit.RawMessage())
+
+	n := commit.ParentCount()
+	for i := uint(0); i < n; i++ {
+		c := commit.Parent(i)
+		fmt.Fprintln(f, c.Id().String(), c.RawMessage())
+	}
+
 }
 
 func gogit() {
@@ -88,20 +97,29 @@ func gogit() {
 		panic(err)
 	}
 
+	f, _ := os.Open(os.DevNull)
+	defer f.Close()
+
+	var master *plumbing.Reference
 	err = iter.ForEach(func(reference *plumbing.Reference) error {
-		fmt.Println(reference.Name())
+		master = reference
+		fmt.Fprintln(f, reference.Name())
 		return nil
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	commits, err := repo.CommitObjects()
+	c, err := repo.CommitObject(master.Hash())
 	if err != nil {
 		panic(err)
 	}
-	commits.ForEach(func(commit *object.Commit) error {
-		fmt.Println(commit.Author.Email)
-		return nil
-	})
+
+	// fmt.Fprintln(f, c.ID().String(), c.Message)
+
+	n := c.NumParents()
+	for i := 0; i < n; i++ {
+		cmt, _ := c.Parent(i)
+		fmt.Fprintln(f, cmt.ID().String(), cmt.Message)
+	}
 }
