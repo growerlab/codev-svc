@@ -1,8 +1,6 @@
 package model
 
-import (
-	"gopkg.in/libgit2/git2go.v27"
-)
+import "gopkg.in/src-d/go-git.v4"
 
 type Submodule struct {
 	RawSubmodule *git.Submodule

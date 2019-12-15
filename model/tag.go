@@ -1,16 +1,16 @@
 package model
 
 import (
-	"gopkg.in/libgit2/git2go.v27"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 type Tag struct {
 	Name   string  `json:"name"`
 	Commit *Commit `json:"commit"`
 
-	RawTag *git.Tag
+	RawTag *object.Tag
 }
 
-func InitTag(name string, rawTag *git.Tag) *Tag {
+func InitTag(name string, rawTag *object.Tag) *Tag {
 	return &Tag{Name: name, RawTag: rawTag}
 }

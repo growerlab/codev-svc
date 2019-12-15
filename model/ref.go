@@ -2,7 +2,8 @@ package model
 
 import (
 	"errors"
-	"gopkg.in/libgit2/git2go.v27"
+
+	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 type RefType string
@@ -21,49 +22,50 @@ type Ref struct {
 	RefType RefType `json:"ref_type"`
 	Commit  *Commit `json:"commit"`
 
-	RawRef *git.Reference
+	RawRef *plumbing.Reference
 	Repo   *Repo
 }
 
-func InitRef(name string, rawRef *git.Reference) *Ref {
+func InitRef(name string, rawRef *plumbing.Reference) *Ref {
 	return &Ref{Name: name, RawRef: rawRef}
 }
 
-func (ref *Ref) RetriveRefType() RefType {
-	if ref.RawRef.IsBranch() {
+func (ref *Ref) RetrieveRefType() RefType {
+	target := ref.RawRef.Target()
+	switch true {
+	case target.IsBranch():
 		ref.RefType = RefBranch
-	} else if ref.RawRef.IsTag() {
+	case target.IsTag():
 		ref.RefType = RefTag
-	} else if ref.RawRef.IsRemote() {
+	case target.IsRemote():
 		ref.RefType = RefRemote
-	} else if ref.RawRef.IsNote() {
+	case target.IsNote():
 		ref.RefType = RefNote
-	} else {
+	default:
 		ref.RefType = RefUnknown
 	}
-
 	return ref.RefType
 }
 
 func (ref *Ref) TargetCommit() (*Commit, error) {
 	refType := ref.RawRef.Type()
-	if git.ReferenceSymbolic == refType {
-		refName := ref.RawRef.SymbolicTarget()
-		refs := ref.Repo.RawRepo.References
-		refResolved, err := refs.Lookup(refName)
+	switch refType {
+	case plumbing.SymbolicReference:
+		refName := ref.RawRef.Target()
+		reference, err := ref.Repo.RawRepo.Reference(refName, false)
 		if err != nil {
 			return nil, err
 		}
-		refWrapped := &Ref{Name: refName, RawRef: refResolved}
+		refWrapped := &Ref{Name: refName.String(), RawRef: reference}
 		return refWrapped.TargetCommit()
-	} else if git.ReferenceOid == refType {
-		oid := ref.RawRef.Target()
-		rawCommit, err := ref.Repo.RawRepo.LookupCommit(oid)
+
+	case plumbing.HashReference:
+		rawCommit, err := ref.Repo.RawRepo.CommitObject(ref.RawRef.Hash())
 		if err != nil {
 			return nil, err
 		}
 		return InitCommit(rawCommit), nil
-	} else {
-		return nil, errors.New("not found")
+	default:
+		return nil, errors.New("not found target commit")
 	}
 }

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"gopkg.in/libgit2/git2go.v27"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 type Tree struct {
@@ -12,10 +12,10 @@ type Tree struct {
 	Blobs      []*Blob      `json:"blobs"`
 	Submodules []*Submodule `json:"submodules"`
 
-	RawTree *git.Tree
+	RawTree *object.Tree
 }
 
-func InitTree(rawTree *git.Tree) *Tree {
+func InitTree(rawTree *object.Tree) *Tree {
 	tree := &Tree{RawTree: rawTree}
 	// set Path, Name...
 	return tree

@@ -1,7 +1,8 @@
 package model
 
 import (
-	git "gopkg.in/libgit2/git2go.v27"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	// git "gopkg.in/src-d/go-git.v4
 )
 
 type Blob struct {
@@ -9,10 +10,10 @@ type Blob struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`
 
-	RawBlob *git.Blob
+	RawBlob *object.Blob
 }
 
-func InitBlob(rawBlob *git.Blob) *Blob {
+func InitBlob(rawBlob *object.Blob) *Blob {
 	blob := &Blob{RawBlob: rawBlob}
 	// set Path, Name...
 	return blob

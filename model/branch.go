@@ -1,7 +1,7 @@
 package model
 
 import (
-	"gopkg.in/libgit2/git2go.v27"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 type Branch struct {
@@ -9,10 +9,10 @@ type Branch struct {
 	Ref    *Ref    `json:"ref"`
 	Commit *Commit `json:"commit"`
 
-	RawBranch *git.Branch
+	RawBranch *plumbing.Reference
 }
 
-func InitBranch(name string, rawBranch *git.Branch) *Branch {
+func InitBranch(name string, rawBranch *plumbing.Reference) *Branch {
 	branch := &Branch{Name: name, RawBranch: rawBranch}
 	// set name, Commit...
 	return branch

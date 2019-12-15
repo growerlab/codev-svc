@@ -1,7 +1,7 @@
 package model
 
 import (
-	"gopkg.in/libgit2/git2go.v27"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 type Commit struct {
@@ -13,10 +13,10 @@ type Commit struct {
 	Parents   []*Commit `json:"parents"`
 	Tree      *Tree     `json:"tree"`
 
-	RawCommit *git.Commit
+	RawCommit *object.Commit
 }
 
-func InitCommit(rawCommit *git.Commit) *Commit {
+func InitCommit(rawCommit *object.Commit) *Commit {
 	commit := &Commit{RawCommit: rawCommit}
 	// set Sha, Message...
 	return commit

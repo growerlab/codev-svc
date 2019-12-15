@@ -1,7 +1,7 @@
 package model
 
 import (
-	"gopkg.in/libgit2/git2go.v27"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
 type EntryType uint8
@@ -17,10 +17,10 @@ type Entry struct {
 	Name      string    `json:"name"`
 	EntryType EntryType `json:"entry_type"`
 
-	RawEntry *git.TreeEntry
+	RawEntry *plumbing.Reference
 }
 
-func InitEntry(rawEntry *git.TreeEntry) *Entry {
+func InitEntry(rawEntry *plumbing.Reference) *Entry {
 	entry := &Entry{RawEntry: rawEntry}
 	// set Sha, Message...
 	return entry
