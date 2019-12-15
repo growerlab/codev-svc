@@ -1,21 +1,20 @@
 package model
 
 import (
-	"errors"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 
-	"gopkg.in/src-d/go-billy.v4"
-	"gopkg.in/src-d/go-billy.v4/osfs"
+	"github.com/growerlab/codev-svc/utils"
+	"github.com/pkg/errors"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
-	"gopkg.in/src-d/go-git.v4/plumbing/cache"
-	"gopkg.in/src-d/go-git.v4/storage"
-	"gopkg.in/src-d/go-git.v4/storage/filesystem"
 )
 
-const ReposPath = "repos/"
+var ReposDir = "repos/"
+
+const hooksDir = "template/hooks"
 const DefaultBranch = "master"
 
 type Repo struct {
@@ -44,9 +43,9 @@ func OpenRepo(repoPath string, name string) (*Repo, error) {
 		Path: repoPath,
 		Name: name,
 	}
-	repo.RepoPath = path.Join(ReposPath, repoPath, name)
+	repo.RepoPath = path.Join(ReposDir, repoPath, name)
 
-	rawRepo, err := git.Open(repo.fileSystem())
+	rawRepo, err := git.PlainOpen(repo.RepoPath)
 
 	if err != nil {
 		return nil, err
@@ -62,16 +61,45 @@ func InitRepo(repoPath string, name string) (*Repo, error) {
 		Path: repoPath,
 		Name: name,
 	}
-	repo.RepoPath = path.Join(ReposPath, repoPath, name)
+	repo.RepoPath = path.Join(ReposDir, repoPath, name)
 
-	sto, _ := repo.fileSystem()
-	rawRepo, err := git.Init(sto, nil)
+	rawRepo, err := git.PlainInit(repo.RepoPath, true)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	repo.RawRepo = rawRepo
+	err = repo.initHooks()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 	repo.postRepoCreated()
 	return repo, nil
+}
+
+// TODO 应为push操作增加软链hook
+func (repo *Repo) initHooks() error {
+	hookInfos, err := ioutil.ReadDir(hooksDir)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	newHookDir := filepath.Join(repo.RepoPath, "hooks")
+	if _, err := os.Stat(newHookDir); os.IsNotExist(err) {
+		err = os.Mkdir(newHookDir, 0755)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
+	for _, hook := range hookInfos {
+		hookPath := filepath.Join(hooksDir, hook.Name())
+		newHookPath := filepath.Join(newHookDir, hook.Name())
+		err = utils.CopyFile(hookPath, newHookPath, 0755)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+	}
+	return nil
 }
 
 func (repo *Repo) postRepoCreated() {
@@ -172,12 +200,4 @@ func (repo *Repo) Size() int64 {
 		return 0
 	}
 	return size
-}
-
-func (repo *Repo) fileSystem() (storage.Storer, billy.Filesystem) {
-	fs := osfs.New(repo.RepoPath)
-
-	s := filesystem.NewStorageWithOptions(fs, cache.NewObjectLRUDefault(), filesystem.Options{KeepDescriptors: true})
-
-	return s, fs
 }
