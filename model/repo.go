@@ -8,7 +8,9 @@ import (
 
 	"github.com/growerlab/codev-svc/utils"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
 
@@ -25,7 +27,7 @@ type Repo struct {
 	// bytes
 	RepoSize float64 `json:"repo_size"`
 
-	Branches []*Branch `json:"branches"`
+	branches []*Branch `json:"branches"`
 
 	Tags []*Tag `json:"tags"`
 
@@ -43,6 +45,7 @@ func OpenRepo(repoPath string, name string) (*Repo, error) {
 		Path: repoPath,
 		Name: name,
 	}
+	log.Info().Str("path", repo.RepoPath).Msg("open repo")
 	repo.RepoPath = path.Join(ReposDir, repoPath, name)
 
 	rawRepo, err := git.PlainOpen(repo.RepoPath)
@@ -116,14 +119,9 @@ func (repo *Repo) postRepoCreated() {
 	}
 
 	// Branches
-	repo.Branches = make([]*Branch, 0)
-	branchesIterator, err := repo.RawRepo.Branches()
-	if err == nil {
-		_ = branchesIterator.ForEach(func(rawBranch *plumbing.Reference) error {
-			name := rawBranch.Name().String()
-			repo.Branches = append(repo.Branches, InitBranch(name, rawBranch))
-			return nil
-		})
+	repo.branches, err = repo.Branches()
+	if err != nil {
+		return
 	}
 
 	// Tags
@@ -183,6 +181,36 @@ func (repo *Repo) GetDefaultBranch() (*Branch, error) {
 
 	// raise exception right now
 	return nil, errors.New("head detached")
+}
+
+func (repo *Repo) Branches() ([]*Branch, error) {
+	if len(repo.branches) > 0 {
+		return repo.branches, nil
+	}
+
+	iter, err := repo.RawRepo.Branches()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	branches := make([]*Branch, 0)
+	err = iter.ForEach(func(ref *plumbing.Reference) error {
+		branches = append(branches, InitBranch(ref.Name().String(), ref))
+		return nil
+	})
+	repo.branches = branches
+	return repo.branches, errors.WithStack(err)
+}
+
+func (repo *Repo) CreateBranch(name string) error {
+	err := repo.RawRepo.CreateBranch(&config.Branch{
+		Name: name,
+	})
+	return errors.WithStack(err)
+}
+
+func (repo *Repo) DeleteBranch(name string) error {
+	err := repo.RawRepo.DeleteBranch(name)
+	return errors.WithStack(err)
 }
 
 func (repo *Repo) Size() int64 {

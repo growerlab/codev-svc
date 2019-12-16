@@ -1,9 +1,13 @@
 package schema
 
 import (
+	"errors"
+
 	"github.com/graphql-go/graphql"
 	"github.com/growerlab/codev-svc/model"
 )
+
+var branchType = graphql.NewObject(graphql.ObjectConfig{})
 
 var RepoType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Repo",
@@ -22,7 +26,7 @@ var RepoType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 		},
 		"branches": &graphql.Field{
-			Type: graphql.String,
+			Type: branchType,
 		},
 	},
 })
@@ -40,12 +44,9 @@ var queryRepo = graphql.Field{
 		},
 	},
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
-		path, _ := p.Args["path"].(string)
-		name, _ := p.Args["name"].(string)
-
-		repo, err := model.OpenRepo(path, name)
-		if err != nil {
-			return nil, err
+		repo, ok := p.Context.Value("repo").(*model.Repo)
+		if !ok {
+			return nil, errors.New("repo is invalid")
 		}
 		return repo, nil
 	},

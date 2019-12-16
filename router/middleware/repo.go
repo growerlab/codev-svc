@@ -12,6 +12,7 @@ import (
 	"github.com/graphql-go/handler"
 	"github.com/growerlab/codev-svc/model"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 )
 
 func CtxRepoMiddleware(c *gin.Context) {
@@ -31,15 +32,17 @@ func CtxRepoMiddleware(c *gin.Context) {
 			return
 		}
 
-		reqRepo := getRepo(reqOptions)
-		if reqRepo == nil {
-			_ = c.AbortWithError(http.StatusBadRequest, errors.New("repo path is required"))
+		reqRepo, err := getRepo(reqOptions.Variables)
+		if err != nil {
+			_ = c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
 
 		repo, err := model.OpenRepo(reqRepo.Path, reqRepo.Name)
-		if err == nil {
-			c.Request.WithContext(context.WithValue(c, "repo", repo))
+		if err != nil {
+			log.Error().Err(err).Msg("failed to open repo")
+		} else {
+			c.Request = c.Request.WithContext(context.WithValue(c, "repo", repo))
 		}
 	}
 	c.Next()
@@ -54,18 +57,15 @@ func (r *repoRequest) fullPath() string {
 	return filepath.Join(r.Path, r.Name)
 }
 
-func getRepo(reqOptions *handler.RequestOptions) *repoRequest {
-	var repoPath, repoName string
-
-	repoPath, _ = reqOptions.Variables["path"].(string)
-	repoName, _ = reqOptions.Variables["name"].(string)
-
-	if len(repoPath) == 0 {
-		return nil
+func getRepo(variables map[string]interface{}) (*repoRequest, error) {
+	var repo = repoRequest{
+		Path: variables["path"].(string),
+		Name: variables["name"].(string),
 	}
 
-	return &repoRequest{
-		Path: repoPath,
-		Name: repoName,
+	if len(repo.Path) == 0 || len(repo.Name) == 0 {
+		return nil, errors.New("not found repo.Path or repo.Name")
 	}
+
+	return &repo, nil
 }
