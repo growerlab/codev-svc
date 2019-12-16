@@ -27,7 +27,7 @@ type Repo struct {
 	// bytes
 	RepoSize float64 `json:"repo_size"`
 
-	branches []*Branch `json:"branches"`
+	Branches []*Branch `json:"branches"`
 
 	Tags []*Tag `json:"tags"`
 
@@ -119,7 +119,7 @@ func (repo *Repo) postRepoCreated() {
 	}
 
 	// Branches
-	repo.branches, err = repo.Branches()
+	repo.Branches, err = repo.branches()
 	if err != nil {
 		return
 	}
@@ -183,22 +183,22 @@ func (repo *Repo) GetDefaultBranch() (*Branch, error) {
 	return nil, errors.New("head detached")
 }
 
-func (repo *Repo) Branches() ([]*Branch, error) {
-	if len(repo.branches) > 0 {
-		return repo.branches, nil
+func (repo *Repo) branches() ([]*Branch, error) {
+	if len(repo.Branches) > 0 {
+		return repo.Branches, nil
 	}
 
 	iter, err := repo.RawRepo.Branches()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	branches := make([]*Branch, 0)
+	branes := make([]*Branch, 0)
 	err = iter.ForEach(func(ref *plumbing.Reference) error {
-		branches = append(branches, InitBranch(ref.Name().String(), ref))
+		branes = append(branes, InitBranch(ref.Name().String(), ref))
 		return nil
 	})
-	repo.branches = branches
-	return repo.branches, errors.WithStack(err)
+	repo.Branches = branes
+	return repo.Branches, errors.WithStack(err)
 }
 
 func (repo *Repo) CreateBranch(name string) error {

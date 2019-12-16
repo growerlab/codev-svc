@@ -1,13 +1,10 @@
 package schema
 
 import (
-	"errors"
-
 	"github.com/graphql-go/graphql"
 	"github.com/growerlab/codev-svc/model"
+	"github.com/pkg/errors"
 )
-
-var branchType = graphql.NewObject(graphql.ObjectConfig{})
 
 var RepoType = graphql.NewObject(graphql.ObjectConfig{
 	Name:        "Repo",
@@ -26,13 +23,18 @@ var RepoType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 		},
 		"branches": &graphql.Field{
-			Type: branchType,
+			Type:        graphql.NewList(branchType),
+			Description: "branch list",
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				repo := params.Context.Value("repo").(*model.Repo)
+				return repo.Branches, nil
+			},
 		},
 	},
 })
 
 var queryRepo = graphql.Field{
-	Name:        "repo",
+	Name:        "Repo",
 	Description: "Query Repo",
 	Type:        graphql.NewNonNull(RepoType),
 	Args: graphql.FieldConfigArgument{
@@ -44,16 +46,13 @@ var queryRepo = graphql.Field{
 		},
 	},
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
-		repo, ok := p.Context.Value("repo").(*model.Repo)
-		if !ok {
-			return nil, errors.New("repo is invalid")
-		}
-		return repo, nil
+		result, err = loadRepo(&p)
+		return
 	},
 }
 
 var createRepo = graphql.Field{
-	Name:        "repo",
+	Name:        "CreateRepo",
 	Description: "Create Repo",
 	Type:        graphql.NewNonNull(RepoType),
 	Args: graphql.FieldConfigArgument{
@@ -73,4 +72,12 @@ var createRepo = graphql.Field{
 		}
 		return repo, nil
 	},
+}
+
+func loadRepo(p *graphql.ResolveParams) (*model.Repo, error) {
+	repo, ok := p.Context.Value("repo").(*model.Repo)
+	if !ok {
+		return nil, errors.New("repo is required")
+	}
+	return repo, nil
 }

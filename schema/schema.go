@@ -4,21 +4,27 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-var rootQuery = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "RootQuery",
-	Description: "Root Query",
-	Fields: graphql.Fields{
-		"repo": &queryRepo,
-	},
-})
+var rootQuery = func() *graphql.Object {
+	fields := map[string]*graphql.Field{
+		queryRepo.Name: &queryRepo,
+	}
+	return graphql.NewObject(graphql.ObjectConfig{
+		Name:        "RootQuery",
+		Description: "Root Query",
+		Fields:      graphql.Fields(fields),
+	})
+}()
 
-var rootMutation = graphql.NewObject(graphql.ObjectConfig{
-	Name:        "RootMutation",
-	Description: "Root mutation",
-	Fields: graphql.Fields{
-		"create_repo": &createRepo,
-	},
-})
+var rootMutation = func() *graphql.Object {
+	fields := map[string]*graphql.Field{
+		createRepo.Name: &createRepo,
+	}
+	return graphql.NewObject(graphql.ObjectConfig{
+		Name:        "RootMutation",
+		Description: "Root mutation",
+		Fields:      graphql.Fields(fields),
+	})
+}()
 
 var Schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 	Query:    rootQuery,
