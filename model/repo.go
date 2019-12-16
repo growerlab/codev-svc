@@ -31,7 +31,7 @@ type Repo struct {
 
 	Refs []*Ref `json:"refs"`
 
-	Submodules []*Submodule `json:"submodules"`
+	// Submodules []*Submodule `json:"submodules"`
 
 	// internal methods
 	RawRepo  *git.Repository
@@ -140,16 +140,16 @@ func (repo *Repo) postRepoCreated() {
 	}
 
 	// Submodules
-	repo.Submodules = make([]*Submodule, 1)
-	tree, err := repo.RawRepo.Worktree()
-	if err == nil {
-		submodules, err := tree.Submodules()
-		if err == nil {
-			for _, sub := range submodules {
-				repo.Submodules = append(repo.Submodules, InitSubmodule(sub))
-			}
-		}
-	}
+	// repo.Submodules = make([]*Submodule, 0)
+	// tree, err := repo.RawRepo.Worktree()
+	// if err == nil {
+	// 	submodules, err := tree.Submodules()
+	// 	if err == nil {
+	// 		for _, sub := range submodules {
+	// 			repo.Submodules = append(repo.Submodules, InitSubmodule(sub))
+	// 		}
+	// 	}
+	// }
 }
 
 func (repo *Repo) Head() (*Ref, error) {
