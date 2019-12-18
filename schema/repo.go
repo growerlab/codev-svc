@@ -34,8 +34,8 @@ var RepoType = graphql.NewObject(graphql.ObjectConfig{
 })
 
 var queryRepo = graphql.Field{
-	Name:        "Repo",
-	Description: "Query Repo",
+	Name:        "repo",
+	Description: "Query repo",
 	Type:        graphql.NewNonNull(RepoType),
 	Args: graphql.FieldConfigArgument{
 		"path": &graphql.ArgumentConfig{
@@ -52,7 +52,7 @@ var queryRepo = graphql.Field{
 }
 
 var createRepo = graphql.Field{
-	Name:        "CreateRepo",
+	Name:        "createRepo",
 	Description: "Create Repo",
 	Type:        graphql.NewNonNull(RepoType),
 	Args: graphql.FieldConfigArgument{
