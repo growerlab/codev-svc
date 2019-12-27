@@ -12,6 +12,7 @@ import (
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 var ReposDir = "repos/"
@@ -153,12 +154,23 @@ func (repo *Repo) postRepoCreated() {
 func (repo *Repo) Head() (*Ref, error) {
 	rawRef, err := repo.RawRepo.Head()
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
-
 	ref := &Ref{Name: rawRef.Name().String(), RawRef: rawRef}
 
 	return ref, nil
+}
+
+func (repo *Repo) FileEntries(path string, hash plumbing.Hash) ([]object.TreeEntry, error) {
+	tree, err := repo.RawRepo.TreeObject(hash)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	pathTree, err := tree.Tree(path)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return pathTree.Entries, nil
 }
 
 func (repo *Repo) GetDefaultBranch() (*Branch, error) {
