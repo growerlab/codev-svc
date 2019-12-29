@@ -33,28 +33,19 @@ func NewClient(apiURL string, timeout time.Duration) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Query(body string, vars map[string]interface{}) (*Result, error) {
-	bodyMap := map[string]interface{}{
-		"query":     body,
-		"variables": vars,
+func (c *Client) Query(req *Request) (*Result, error) {
+	if err := req.Validate(); err != nil {
+		return nil, errors.WithStack(err)
 	}
-	if len(vars) == 0 {
-		return nil, errors.New("vars is required")
-	}
-	if _, found := vars["path"]; !found {
-		return nil, errors.New("repo path is required in vars")
-	}
-	if _, found := vars["name"]; !found {
-		return nil, errors.New("repo name is required in vars")
-	}
-	return Post(c.client, c.apiURL, bodyMap)
+
+	return Post(c.client, c.apiURL, req.RequestBody())
 }
 
-func (c *Client) Mutation(body string, vars map[string]interface{}) (*Result, error) {
+func (c *Client) Mutation(req *Request) (*Result, error) {
 	return nil, nil
 }
 
-func (c *Client) Branch(repo *Repo) *Branch {
+func (c *Client) Branch(repo *RepoContext) *Branch {
 	return &Branch{
 		client: c,
 		repo:   repo,

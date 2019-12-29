@@ -4,7 +4,7 @@ import "github.com/pkg/errors"
 
 type Branch struct {
 	client APISubmitter
-	repo   *Repo
+	repo   *RepoContext
 }
 
 func (b *Branch) Default() (string, error) {
@@ -16,7 +16,7 @@ func (b *Branch) Default() (string, error) {
 		}
 	}
 }`
-	result, err := b.client.Query(body, b.repo.ToVars())
+	result, err := b.client.Query(NewRequest(body, b.repo, nil))
 	if err != nil {
 		return "", errors.WithStack(err)
 	}
