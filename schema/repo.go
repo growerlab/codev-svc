@@ -20,7 +20,7 @@ var RepoType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.Float,
 		},
 		"default_branch": &graphql.Field{
-			Type: graphql.String,
+			Type: branchType,
 		},
 		"branches": &graphql.Field{
 			Type:        graphql.NewList(branchType),

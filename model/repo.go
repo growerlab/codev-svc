@@ -6,7 +6,7 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/growerlab/codev-svc/utils"
+	"github.com/growerlab/codev-svc/model/utils"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/src-d/go-git.v4"
@@ -173,43 +173,31 @@ func (repo *Repo) FileEntries(path string, hash plumbing.Hash) ([]object.TreeEnt
 	return pathTree.Entries, nil
 }
 
-func (repo *Repo) GetDefaultBranch() (*Branch, error) {
-	rawRef, err := repo.RawRepo.Head()
-	if err != nil {
-		return nil, err
-	}
-
-	refTarget := rawRef.Target()
-
-	if refTarget.IsBranch() || refTarget.IsTag() || refTarget.IsRemote() {
-
-		branch := &Branch{
-			Name:      rawRef.Name().String(),
-			RawBranch: rawRef,
-		}
-		repo.DefaultBranch = branch
-		return branch, nil
-	}
-
-	// raise exception right now
-	return nil, errors.New("head detached")
-}
-
 func (repo *Repo) branches() ([]*Branch, error) {
 	if len(repo.Branches) > 0 {
 		return repo.Branches, nil
+	}
+
+	refHead, err := repo.RawRepo.Head()
+	if err != nil {
+		return nil, err
 	}
 
 	iter, err := repo.RawRepo.Branches()
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	branes := make([]*Branch, 0)
+	branches := make([]*Branch, 0)
 	err = iter.ForEach(func(ref *plumbing.Reference) error {
-		branes = append(branes, InitBranch(ref.Name().String(), ref))
+		branch := InitBranch(ref)
+		if utils.ReferenceCompare(ref, refHead) {
+			branch.Default = true
+			repo.DefaultBranch = branch
+		}
+		branches = append(branches, branch)
 		return nil
 	})
-	repo.Branches = branes
+	repo.Branches = branches
 	return repo.Branches, errors.WithStack(err)
 }
 

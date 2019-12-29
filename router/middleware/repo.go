@@ -22,7 +22,6 @@ func CtxRepoMiddleware(c *gin.Context) {
 			_ = c.AbortWithError(http.StatusInternalServerError, errors.WithStack(err))
 			return
 		}
-
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyRaw))
 		reqOptions := handler.NewRequestOptions(c.Request)
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyRaw))
