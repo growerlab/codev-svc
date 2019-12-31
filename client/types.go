@@ -7,19 +7,21 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-type Result struct {
-	Data  json.RawMessage `json:"data"`
-	Error error           `json:"error,omitempty"`
+type GraphQLError struct {
+	Message   string          `json:"message"`
+	Locations json.RawMessage `json:"locations,omitempty"`
 }
 
-func (d Result) DataPath(p string) gjson.Result {
-	return gjson.GetBytes(d.Data, p)
+type Result struct {
+	Data     json.RawMessage `json:"data"`
+	DataPath gjson.Result
+	Errors   []*GraphQLError `json:"errors,omitempty"`
 }
 
 type Request struct {
 	Body      string                 // query/mutation body
 	RepoName  string                 // repo name
-	RepoPath  string                 // abs repo path
+	RepoPath  string                 // repo path
 	Variables map[string]interface{} // query variables
 }
 

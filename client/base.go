@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"github.com/tidwall/gjson"
 )
 
 func Post(client *http.Client, apiURL string, bodyMap map[string]interface{}) (*Result, error) {
@@ -32,5 +33,9 @@ func Post(client *http.Client, apiURL string, bodyMap map[string]interface{}) (*
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+	if len(result.Errors) > 0 {
+		return nil, errors.New(result.Errors[0].Message)
+	}
+	result.DataPath = gjson.ParseBytes(result.Data)
 	return result, nil
 }

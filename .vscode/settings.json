@@ -1,4 +1,4 @@
 {
-    "go.lintTool": "golint",
-    "go.lintOnSave": "package",
+    "go.lintTool": "golangci-lint",
+    "go.lintOnSave": "off",
 }

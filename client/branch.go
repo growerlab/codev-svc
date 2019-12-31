@@ -1,25 +1,36 @@
 package client
 
-import "github.com/pkg/errors"
+import "github.com/tidwall/gjson"
 
 type Branch struct {
 	client APISubmitter
 	repo   *RepoContext
 }
 
-func (b *Branch) Default() (string, error) {
+func (b *Branch) Info() (defaultBranch string, branches []string, err error) {
 	body := `
 {
 	repo {
 		default_branch {
 			name
 		}
+		branches {
+			name
+		}
 	}
 }`
-	result, err := b.client.Query(NewRequest(body, b.repo, nil))
+	var result *Result
+	result, err = b.client.Query(NewRequest(body, b.repo, nil))
 	if err != nil {
-		return "", errors.WithStack(err)
+		return
 	}
-	branchName := result.DataPath("repo.default_branch.name").String()
-	return branchName, nil
+
+	branches = make([]string, 0)
+	result.DataPath.Get("repo.branches.#.name").ForEach(func(_, value gjson.Result) bool {
+		branches = append(branches, value.String())
+		return true
+	})
+
+	defaultBranch = result.DataPath.Get("repo.default_branch.name").String()
+	return
 }
