@@ -39,10 +39,10 @@ var queryRepo = graphql.Field{
 	Type:        graphql.NewNonNull(RepoType),
 	Args: graphql.FieldConfigArgument{
 		"path": &graphql.ArgumentConfig{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.String),
 		},
 		"name": &graphql.ArgumentConfig{
-			Type: graphql.String,
+			Type: graphql.NewNonNull(graphql.String),
 		},
 	},
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {

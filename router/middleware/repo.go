@@ -26,7 +26,13 @@ func CtxRepoMiddleware(c *gin.Context) {
 		reqOptions := handler.NewRequestOptions(c.Request)
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyRaw))
 
+		// schema 请求跳过
 		if strings.Contains(reqOptions.Query, "__type") {
+			c.Next()
+			return
+		}
+		// 创建项目的mutation请求跳过
+		if strings.Contains(reqOptions.Query, "createRepo") {
 			c.Next()
 			return
 		}

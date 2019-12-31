@@ -42,7 +42,7 @@ func (c *Client) Query(req *Request) (*Result, error) {
 }
 
 func (c *Client) Mutation(req *Request) (*Result, error) {
-	return nil, nil
+	return c.Query(req)
 }
 
 func (c *Client) Branch(repo *RepoContext) *Branch {
