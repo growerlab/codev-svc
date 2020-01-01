@@ -60,6 +60,8 @@ func OpenRepo(repoPath string, name string) (*Repo, error) {
 	return repo, nil
 }
 
+// TODO 如果仓库被fork过，用户删除时，不应该进行物理删除，那么用户再创建同名仓库时，应该做特殊处理
+//
 func InitRepo(repoPath string, name string) (*Repo, error) {
 	if len(repoPath) == 0 || len(name) == 0 {
 		return nil, errors.New("path and name is required")

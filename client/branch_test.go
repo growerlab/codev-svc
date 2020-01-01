@@ -1,10 +1,15 @@
 package client
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestBranchInfo(t *testing.T) {
 	client, repo := defaultClient()
-	defaultBranch, branches, err := client.Branch(repo).Info()
+	branch := client.Branch(repo)
+	branch.client = &FakeClient{}
+
+	defaultBranch, branches, err := branch.Info()
 	if err != nil {
 		t.Fatalf("%+v", err)
 	}
@@ -16,13 +21,4 @@ func TestBranchInfo(t *testing.T) {
 	if len(branches) != len([]string{"master"}) {
 		t.Fatal(branches)
 	}
-}
-
-func defaultClient() (*Client, *RepoContext) {
-	client, _ := NewClient("http://localhost:9000/graphql", 0)
-	repo := &RepoContext{
-		Path: "/",
-		Name: "moli",
-	}
-	return client, repo
 }

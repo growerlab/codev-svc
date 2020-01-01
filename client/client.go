@@ -51,3 +51,9 @@ func (c *Client) Branch(repo *RepoContext) *Branch {
 		repo:   repo,
 	}
 }
+
+func (c *Client) Repository(repo *RepoContext) *Repository {
+	return &Repository{
+		client: c,
+	}
+}

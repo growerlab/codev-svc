@@ -27,9 +27,13 @@ func Post(client *http.Client, apiURL string, bodyMap map[string]interface{}) (*
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.Errorf("status: %v  body: %v", resp.StatusCode, string(respBody))
 	}
+	result, err := BuildResult(respBody)
+	return result, errors.WithStack(err)
+}
 
+func BuildResult(respBody []byte) (*Result, error) {
 	result := new(Result)
-	err = json.Unmarshal(respBody, result)
+	err := json.Unmarshal(respBody, result)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

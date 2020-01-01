@@ -11,7 +11,6 @@ import (
 	"github.com/graphql-go/handler"
 	"github.com/growerlab/codev-svc/model"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 )
 
 func CtxRepoMiddleware(c *gin.Context) {
@@ -25,30 +24,37 @@ func CtxRepoMiddleware(c *gin.Context) {
 		reqOptions := handler.NewRequestOptions(c.Request)
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyRaw))
 
-		reqRepo, err := getRepo(reqOptions.Variables)
+		repoCtx, err := BuildRepoContext(c, reqOptions.Variables)
 		if err == nil {
-			repo, err := model.OpenRepo(reqRepo.Path, reqRepo.Name)
-			if err != nil {
-				log.Error().Err(err).Msg("failed to open repo")
-			} else {
-				c.Request = c.Request.WithContext(context.WithValue(c, "repo", repo))
-			}
+			c.Request = c.Request.WithContext(repoCtx)
 		}
 	}
 	c.Next()
 }
 
-type repoRequest struct {
+type RepoRequest struct {
 	Path string
 	Name string
 }
 
-func (r *repoRequest) fullPath() string {
+func (r *RepoRequest) fullPath() string {
 	return filepath.Join(r.Path, r.Name)
 }
 
-func getRepo(variables map[string]interface{}) (*repoRequest, error) {
-	var repo = repoRequest{
+func BuildRepoContext(c context.Context, varsMap map[string]interface{}) (context.Context, error) {
+	reqRepo, err := getRepo(varsMap)
+	if err != nil {
+		return nil, err
+	}
+	repo, err := model.OpenRepo(reqRepo.Path, reqRepo.Name)
+	if err != nil {
+		return nil, err
+	}
+	return context.WithValue(c, "repo", repo), nil
+}
+
+func getRepo(variables map[string]interface{}) (*RepoRequest, error) {
+	var repo = RepoRequest{
 		Path: variables["path"].(string),
 		Name: variables["name"].(string),
 	}
