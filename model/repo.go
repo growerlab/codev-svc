@@ -61,6 +61,9 @@ func OpenRepo(repoPath string, name string) (*Repo, error) {
 }
 
 func InitRepo(repoPath string, name string) (*Repo, error) {
+	if len(repoPath) == 0 || len(name) == 0 {
+		return nil, errors.New("path and name is required")
+	}
 	repo := &Repo{
 		Path: repoPath,
 		Name: name,

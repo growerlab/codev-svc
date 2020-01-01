@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/handler"
@@ -26,28 +25,14 @@ func CtxRepoMiddleware(c *gin.Context) {
 		reqOptions := handler.NewRequestOptions(c.Request)
 		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyRaw))
 
-		// schema 请求跳过
-		if strings.Contains(reqOptions.Query, "__type") {
-			c.Next()
-			return
-		}
-		// 创建项目的mutation请求跳过
-		if strings.Contains(reqOptions.Query, "createRepo") {
-			c.Next()
-			return
-		}
-
 		reqRepo, err := getRepo(reqOptions.Variables)
-		if err != nil {
-			_ = c.AbortWithError(http.StatusBadRequest, err)
-			return
-		}
-
-		repo, err := model.OpenRepo(reqRepo.Path, reqRepo.Name)
-		if err != nil {
-			log.Error().Err(err).Msg("failed to open repo")
-		} else {
-			c.Request = c.Request.WithContext(context.WithValue(c, "repo", repo))
+		if err == nil {
+			repo, err := model.OpenRepo(reqRepo.Path, reqRepo.Name)
+			if err != nil {
+				log.Error().Err(err).Msg("failed to open repo")
+			} else {
+				c.Request = c.Request.WithContext(context.WithValue(c, "repo", repo))
+			}
 		}
 	}
 	c.Next()

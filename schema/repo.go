@@ -37,14 +37,6 @@ var queryRepo = graphql.Field{
 	Name:        "repo",
 	Description: "Query repo",
 	Type:        graphql.NewNonNull(RepoType),
-	Args: graphql.FieldConfigArgument{
-		"path": &graphql.ArgumentConfig{
-			Type: graphql.NewNonNull(graphql.String),
-		},
-		"name": &graphql.ArgumentConfig{
-			Type: graphql.NewNonNull(graphql.String),
-		},
-	},
 	Resolve: func(p graphql.ResolveParams) (result interface{}, err error) {
 		result, err = loadRepo(&p)
 		return
