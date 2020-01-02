@@ -1,6 +1,11 @@
 package client
 
-import "github.com/tidwall/gjson"
+import (
+	"fmt"
+
+	"github.com/pkg/errors"
+	"github.com/tidwall/gjson"
+)
 
 type Branch struct {
 	client APISubmitter
@@ -32,5 +37,24 @@ func (b *Branch) Info() (defaultBranch string, branches []string, err error) {
 	})
 
 	defaultBranch = result.DataPath.Get("repo.default_branch.name").String()
+	return
+}
+
+func (b *Branch) Delete(branchName string) (err error) {
+	body := `
+mutation DeleteBranch {
+	deleteBranch(branchName: "%s")
+}`
+	body = fmt.Sprintf(body, branchName)
+
+	var result *Result
+	result, err = b.client.Mutation(NewRequest(body, b.repo, nil))
+	if err != nil {
+		return
+	}
+	if !result.DataPath.Get("deleteBranch").Bool() {
+		err = errors.New("delete branch was faild")
+		return
+	}
 	return
 }
