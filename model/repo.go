@@ -215,6 +215,7 @@ func (repo *Repo) CreateBranch(name string) error {
 
 func (repo *Repo) DeleteBranch(name string) error {
 	err := repo.RawRepo.DeleteBranch(name)
+	repo.postRepoCreated()
 	return errors.WithStack(err)
 }
 

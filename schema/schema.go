@@ -17,7 +17,8 @@ var rootQuery = func() *graphql.Object {
 
 var rootMutation = func() *graphql.Object {
 	fields := map[string]*graphql.Field{
-		createRepo.Name: &createRepo,
+		createRepo.Name:   &createRepo,
+		deleteBranch.Name: &deleteBranch,
 	}
 	return graphql.NewObject(graphql.ObjectConfig{
 		Name:        "RootMutation",

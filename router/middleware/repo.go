@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"path/filepath"
 
@@ -27,6 +28,8 @@ func CtxRepoMiddleware(c *gin.Context) {
 		repoCtx, err := BuildRepoContext(c, reqOptions.Variables)
 		if err == nil {
 			c.Request = c.Request.WithContext(repoCtx)
+		} else {
+			log.Println("not found repo: ", reqOptions.Variables)
 		}
 	}
 	c.Next()
