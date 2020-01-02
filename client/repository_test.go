@@ -10,7 +10,7 @@ import (
 
 func TestRepository_Create(t *testing.T) {
 	repository := &Repository{
-		client: &FakeClient{},
+		client: &DirectGQLClient{},
 		repo: &RepoContext{
 			Path: "/",
 			Name: "moli33",

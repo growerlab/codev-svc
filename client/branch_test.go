@@ -7,7 +7,7 @@ import (
 func TestBranchInfo(t *testing.T) {
 	client, repo := defaultClient()
 	branch := client.Branch(repo)
-	branch.client = &FakeClient{}
+	branch.client = &DirectGQLClient{}
 
 	defaultBranch, branches, err := branch.Info()
 	if err != nil {

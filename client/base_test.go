@@ -22,7 +22,7 @@ func TestPost(t *testing.T) {
 }
 
 func defaultClient() (*Client, *RepoContext) {
-	client, _ := NewClient("http://localhost:9000/graphql", 0)
+	client, _ := NewClient("", 0)
 	repo := &RepoContext{
 		Path: "/",
 		Name: "moli",
@@ -30,10 +30,10 @@ func defaultClient() (*Client, *RepoContext) {
 	return client, repo
 }
 
-type FakeClient struct {
+type DirectGQLClient struct {
 }
 
-func (f *FakeClient) Query(req *Request) (*Result, error) {
+func (f *DirectGQLClient) Query(req *Request) (*Result, error) {
 	body, _ := json.Marshal(req.RequestBody())
 	gqlResult, err := graphqlExecuter(body)
 	if err != nil {
@@ -46,7 +46,7 @@ func (f *FakeClient) Query(req *Request) (*Result, error) {
 	return BuildResult(gqlResultData)
 }
 
-func (f *FakeClient) Mutation(req *Request) (*Result, error) {
+func (f *DirectGQLClient) Mutation(req *Request) (*Result, error) {
 	return f.Query(req)
 }
 
