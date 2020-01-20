@@ -70,7 +70,7 @@ func InitRepo(repoPath string, name string) (*Repo, error) {
 		Path: repoPath,
 		Name: name,
 	}
-	repo.RepoPath = path.Join(ReposDir, repoPath, name)
+	repo.RepoPath = path.Join(ReposDir, repoPath)
 
 	rawRepo, err := git.PlainInit(repo.RepoPath, true)
 	if err != nil {
