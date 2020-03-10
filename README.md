@@ -2,8 +2,8 @@
 
 ### installation
 ``` bash
-go get github.com/growerlab/codev-svc
-cd $GOPATH/src/github.com/growerlab/codev-svc
+go get github.com/growerlab/svc
+cd $GOPATH/src/github.com/growerlab/svc
 go mod download
 ```
 

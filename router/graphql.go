@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/handler"
-	"github.com/growerlab/codev-svc/schema"
+	"github.com/growerlab/svc/schema"
 )
 
 func GraphQLHandler() gin.HandlerFunc {

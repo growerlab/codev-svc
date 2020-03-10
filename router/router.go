@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/growerlab/codev-svc/config"
-	"github.com/growerlab/codev-svc/router/middleware"
+	"github.com/growerlab/svc/config"
+	"github.com/growerlab/svc/router/middleware"
 )
 
 var Router *gin.Engine

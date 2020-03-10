@@ -9,12 +9,12 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"github.com/growerlab/codev-svc/router/middleware"
-	"github.com/growerlab/codev-svc/schema"
+	"github.com/growerlab/svc/router/middleware"
+	"github.com/growerlab/svc/schema"
 )
 
 func init() {
-	base := filepath.Join(os.Getenv("GOPATH"), "src", "github.com/growerlab/codev-svc")
+	base := filepath.Join(os.Getenv("GOPATH"), "src", "github.com/growerlab/svc")
 	_ = os.Chdir(base)
 }
 

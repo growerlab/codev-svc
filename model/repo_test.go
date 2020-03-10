@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	base := filepath.Join(os.Getenv("GOPATH"), "src", "github.com/growerlab/codev-svc")
+	base := filepath.Join(os.Getenv("GOPATH"), "src", "github.com/growerlab/svc")
 	_ = os.Chdir(base)
 
 	ReposDir = filepath.Join(base, "repos")

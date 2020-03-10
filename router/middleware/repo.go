@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/graphql-go/handler"
-	"github.com/growerlab/codev-svc/model"
+	"github.com/growerlab/svc/model"
 	"github.com/pkg/errors"
 )
 

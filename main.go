@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/growerlab/codev-svc/config"
-	"github.com/growerlab/codev-svc/router"
+	"github.com/growerlab/svc/config"
+	"github.com/growerlab/svc/router"
 )
 
 func main() {

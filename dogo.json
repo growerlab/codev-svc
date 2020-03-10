@@ -1,7 +1,7 @@
 {
-    "WorkingDir": "{GOPATH}/src/github.com/growerlab/codev-svc",
+    "WorkingDir": "{GOPATH}/src/github.com/growerlab/svc",
     "SourceDir": [
-        "{GOPATH}/src/github.com/growerlab/codev-svc"
+        "{GOPATH}/src/github.com/growerlab/svc"
     ],
     "SourceExt": [".go"],
     "BuildCmd": "go build main.go",

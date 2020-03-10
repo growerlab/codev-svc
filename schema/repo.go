@@ -2,7 +2,7 @@ package schema
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/growerlab/codev-svc/model"
+	"github.com/growerlab/svc/model"
 	"github.com/pkg/errors"
 )
 

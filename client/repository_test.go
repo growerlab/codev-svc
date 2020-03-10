@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/growerlab/codev-svc/model"
+	"github.com/growerlab/svc/model"
 )
 
 func TestRepository_Create(t *testing.T) {

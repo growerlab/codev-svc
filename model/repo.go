@@ -6,7 +6,7 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/growerlab/codev-svc/model/utils"
+	"github.com/growerlab/svc/model/utils"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"gopkg.in/src-d/go-git.v4"
