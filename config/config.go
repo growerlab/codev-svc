@@ -24,7 +24,7 @@ type AppConfig struct {
 var Config AppConfig
 
 func InitConfig() {
-	env := os.Getenv("APP_ENV")
+	env := os.Getenv("ENV")
 	if "" == env {
 		env = EnvDev
 	}

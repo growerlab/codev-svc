@@ -8,7 +8,7 @@ go mod download
 ```
 
 ### build and run
-`APP_ENV=dev go run main.go`
+`ENV=dev go run main.go`
 
 ### env
 - dev
