@@ -53,9 +53,12 @@ func InitConfig() {
 
 	logFile := os.Getenv("LOG_FILE")
 	if logFile != "" {
-		err := os.Mkdir(filepath.Dir(logFile), 0755)
-		if err != nil {
-			panic(err)
+		dir := filepath.Dir(logFile)
+		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			err := os.Mkdir(dir, 0755)
+			if err != nil {
+				panic(err)
+			}
 		}
 		Config.LogFile = logFile
 	} else {
