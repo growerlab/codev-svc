@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 )
@@ -52,6 +53,10 @@ func InitConfig() {
 
 	logFile := os.Getenv("LOG_FILE")
 	if logFile != "" {
+		err := os.Mkdir(filepath.Dir(logFile), 0755)
+		if err != nil {
+			panic(err)
+		}
 		Config.LogFile = logFile
 	} else {
 		fmt.Printf("please specify a value for LOG_FILE\n")
