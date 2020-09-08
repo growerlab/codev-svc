@@ -6,6 +6,7 @@ import (
 	"path"
 	"path/filepath"
 
+	localConfig "github.com/growerlab/svc/config"
 	"github.com/growerlab/svc/model/utils"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -19,6 +20,10 @@ var ReposDir = "repos/"
 
 const hooksDir = "template/hooks"
 const DefaultBranch = "master"
+
+func InitRepoConfig() {
+	ReposDir = localConfig.Config.ReposDir
+}
 
 type Repo struct {
 	Path          string  `json:"path"`
