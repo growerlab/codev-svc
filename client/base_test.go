@@ -9,8 +9,8 @@ import (
 
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
-	"github.com/growerlab/svc/router/middleware"
 	"github.com/growerlab/svc/schema"
+	"github.com/growerlab/svc/service/middleware"
 )
 
 func init() {

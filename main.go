@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/growerlab/svc/config"
-	"github.com/growerlab/svc/router"
+	"github.com/growerlab/svc/service"
 )
 
 func main() {
-	r := router.Router
+	r := service.Router
 
-	router.Route()
+	service.Route()
 
 	config.Logger.Info().Msgf("booting server on port: %s\n", config.Config.Port)
 	if err := r.Run(":" + config.Config.Port); err != nil {

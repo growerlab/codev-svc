@@ -1,4 +1,4 @@
-package router
+package service
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/growerlab/svc/config"
-	"github.com/growerlab/svc/router/middleware"
+	"github.com/growerlab/svc/service/middleware"
 )
 
 var Router *gin.Engine
